@@ -1,11 +1,15 @@
 const { expect } = require('@wdio/globals')
 const LoginPage = require('../pageobjects/LoginPage')
 const DashboardPage = require('../pageobjects/DashboardPage')
+const credentials = require('../data/credentials');
+
 
 describe('www.saucedemo.com login tests', () => {
     //before each test, open page
     beforeEach( async() =>{
+        //check if page is displayed
        await LoginPage.open();
+    await expect(await LoginPage.isLoginPageDisplayed()).toBe(true);
     });
 
     //UC-1 Test Login form with empty credentials
@@ -27,33 +31,24 @@ describe('www.saucedemo.com login tests', () => {
         await expect(LoginPage.errorMessage).toHaveText('Epic sadface: Password is required');
     });
 
-    //define all valid usernames
-    const valid_usernames = [
-        'standard_user',
-        'problem_user',
-        'performance_glitch_user',
-        'error_user',
-        'visual_user'
-    ];
-
     //using forEach check if every username passes
-    valid_usernames.forEach((username)=>{
-        it(`UC-3: Should successfully login with valid username: ${username}`, async()=>{
-            await LoginPage.login(username, 'secret_sauce');
+    for (const username of credentials.valid_usernames) {
+        it(`UC-3: Should successfully login with valid username: ${username}`, async () => {
+            await LoginPage.login(username, credentials.password);
 
-            await expect(DashboardPage.title).toBeDisplayed();
+            expect(await DashboardPage.isDashboardDisplayed()).toBe(true);
             await expect(DashboardPage.title).toHaveText('Swag Labs');
         });
-    });
+    }
 
     it('UC-3.2: Locked out user should not login', async () => {
-    await LoginPage.login('locked_out_user', 'secret_sauce');
+        await LoginPage.login(credentials.locked_user, credentials.password);
 
-    await expect(LoginPage.errorMessage).toBeDisplayed();
-    await expect(LoginPage.errorMessage).toHaveText(
-        'Epic sadface: Sorry, this user has been locked out.'
-    );
-});
+        await expect(LoginPage.errorMessage).toBeDisplayed();
+        await expect(LoginPage.errorMessage).toHaveText(
+            'Epic sadface: Sorry, this user has been locked out.'
+        );
+    });
 
 
 

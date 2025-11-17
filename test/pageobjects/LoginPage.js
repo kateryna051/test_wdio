@@ -1,9 +1,10 @@
 const { $, browser } = require('@wdio/globals')
+const BasePage = require('./BasePage')
 
 /**
  * sub page containing specific selectors and methods for a specific page
  */
-class LoginPage {
+class LoginPage extends BasePage{
 
     //get username
     get username () {
@@ -23,15 +24,14 @@ class LoginPage {
         return $('.error-message-container');
     }
 
-    //open main page
-    async open(){
-        await browser.url('https://www.saucedemo.com/');
+    //open page
+    async open() {
+        await super.open('/');
     }
-    async clearInput(elem) {
-    await elem.click();
-    await browser.keys(['Control', 'a']);
-    await browser.keys('Backspace');
-}
+    //check if page is displayed
+    async isLoginPageDisplayed() {
+        return this.isPageDisplayed(this.loginButton);
+    }
 
     async typeCredentials (username, password){
         await this.clearInput(this.username);

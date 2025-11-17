@@ -1,15 +1,21 @@
 const { $ } = require('@wdio/globals')
+const BasePage = require('./BasePage')
 
-class DashboardPage{
+class DashboardPage extends BasePage {
 
-    //at first get title
-    get title (){
+    //get title at first
+    get title() {
         return $('.app_logo');
     }
 
     //then get text from title
-    get titleText (){
+    async getTitleText() {
         return this.title.getText();
+    }
+
+    // check if page isDisplayed
+    async isDashboardDisplayed() {
+        return this.isPageDisplayed(this.title);
     }
 }
 
